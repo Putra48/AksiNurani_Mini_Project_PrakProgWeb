@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aksi Nurani</title>
+    <link rel="icon" href="asset/logo aksi nurani.png">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="asset/logo aksi nurani.png" alt="Logo Aksi Nurani">
+            <h1>Aksi Nurani</h1>
+        </div>
+
+        <nav class="navbar">
+            <div class="header-search index header">
+                <form action="#">
+                    <input type="text" placeholder="Cari Kampanye Donasi">
+                </form>
+            </div>
+            <div class="nav-section">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="login.html" class="nav-link">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="search-container">
+        <div class="search-item">
+            <label for="kategori">Kategori</label>
+            <select id="kategori">
+                <option value="">Pilih Kategori</option>
+                <option value="pendidikan">Pendidikan</option>
+                <option value="kesehatan">Kesehatan</option>
+                <option value="bencana alam">Bencana Alam</option>
+                <option value="lingkungan">Lingkungan</option>
+                <option value="sosial dan kemanusiaan">Sosial dan Kemanusiaan</option>
+            </select>
+        </div>
+
+        <div class="search-item">
+            <label for="lokasi">Lokasi</label>
+            <input type="text" id="lokasi" placeholder="Cari Lokasi">
+        </div>
+        <div class="search-item">
+            <label for="target">Rentang Target Dana</label>
+            <select id="target">
+                <option value="">Pilih Rentang</option>
+                <option value="1">Rp 1 - 10 Juta</option>
+                <option value="2">Rp 10 - 15 Juta</option>
+                <option value="3">Rp 15 - 30 Juta</option>
+                <option value="4">Di atas 30 Juta</option>
+            </select>
+        </div>
+    </section>
+
+    <main>
+        <div class="donasi-list">
+ 
+            <div class="donasi-card">
+                <div class="card-image-wrapper">
+                    <img src="https://indonesiaberbagi.org/assets/images/news/6025e2a0dbbab34e818880059b8a7337.JPG" alt="Gambar Gempa">
+                    <span class="kategori-badge">Bencana Alam</span>
+                </div>
+                <div class="card-content">
+                    <h3>Bantuan Korban Gempa Bumi di Cianjur</h3>
+                    <p class="penyelenggara">Penyelenggara: <strong>Relawan Peduli Bencana</strong></p>
+                    
+                    <div class="dana-info">
+                        <div class="dana-item">
+                            <span class="label">Terkumpul</span>
+                            <span class="nominal">Rp 45.000.000</span>
+                        </div>
+                        <div class="dana-item target">
+                            <span class="label">Target</span>
+                            <span class="nominal">Rp 100.000.000</span>
+                        </div>
+                    </div>
+                    
+                    <p class="deadline"> Batas Waktu: 10 Mei 2026</p>
+ 
+                    <a href="detail.html#cianjur" class="btn-detail">Lihat Lebih Lengkap</a>
+                </div>
+            </div>
+
+ 
+            <div class="donasi-card">
+                <div class="card-image-wrapper">
+                    <img src="https://greennetwork.id/wp-content/uploads/sites/2/2024/07/ANAK-PAPUA-SD-1024x504.webp" alt="Gambar anak Papua">
+                    <span class="kategori-badge">Pendidikan</span>
+                </div>
+                <div class="card-content">
+                    <h3>Beasiswa untuk Anak Papua</h3>
+                    <p class="penyelenggara">Penyelenggara: <strong>Yayasan Pendidikan Nusantara</strong></p>
+                    
+                    <div class="dana-info">
+                        <div class="dana-item">
+                            <span class="label">Terkumpul</span>
+                            <span class="nominal">Rp 25.000.000</span>
+                        </div>
+                        <div class="dana-item target">
+                            <span class="label">Target</span>
+                            <span class="nominal">Rp 75.000.000</span>
+                        </div>
+                    </div>
+                    
+                    <p class="deadline"> Batas Waktu: 20 Mei 2026</p>
+   
+                    <a href="detail.html#papua" class="btn-detail">Lihat Lebih Lengkap</a>
+                </div>
+            </div>
+
+ 
+            <div class="donasi-card">
+                <div class="card-image-wrapper">
+                    <img src="https://www.axa-mandiri.co.id/documents/1415637/44530363/Prosedur+Operasi+Jantung+Bocor.jpg/e2315565-ba51-bb8a-de51-c799d03c861f?t=1689559677510" alt="Gambar adik Rina">
+                    <span class="kategori-badge">Kesehatan</span>
+                </div>
+                <div class="card-content">
+                    <h3>Bantuan Operasi Jantung Adik Rina</h3>
+                    <p class="penyelenggara">Penyelenggara: <strong>Keluarga Adik Rina</strong></p>
+                    
+                    <div class="dana-info">
+                        <div class="dana-item">
+                            <span class="label">Terkumpul</span>
+                            <span class="nominal">Rp 60.000.000</span>
+                        </div>
+                        <div class="dana-item target">
+                            <span class="label">Target</span>
+                            <span class="nominal">Rp 150.000.000</span>
+                        </div>
+                    </div>
+                    
+                    <p class="deadline"> Batas Waktu: 5 Juni 2026</p>
+ 
+                    <a href="detail.html#rina" class="btn-detail">Lihat Lebih Lengkap</a>
+                </div>
+            </div>
+
+ 
+            <div class="donasi-card">
+                <div class="card-image-wrapper">
+                    <img src="https://amalsholeh-s3.imgix.net/cover/oc8lKUj9OSwcS5com7kXfnm4UZVwjPmvwKFTFQwT.png" alt="Gambar Pohon">
+                    <span class="kategori-badge">Lingkungan</span>
+                </div>
+                <div class="card-content">
+                    <h3>Gerakan Menanam 1000 Pohon</h3>
+                    <p class="penyelenggara">Penyelenggara: <strong>Komunitas Hijau Indonesia</strong></p>
+                    
+                    <div class="dana-info">
+                        <div class="dana-item">
+                            <span class="label">Terkumpul</span>
+                            <span class="nominal">Rp 15.000.000</span>
+                        </div>
+                        <div class="dana-item target">
+                            <span class="label">Target</span>
+                            <span class="nominal">Rp 40.000.000</span>
+                        </div>
+                    </div>
+                    
+                    <p class="deadline"> Batas Waktu: 30 Juni 2026</p>
+ 
+                    <a href="detail.html#pohon" class="btn-detail">Lihat Lebih Lengkap</a>
+                </div>
+            </div>
+
+ 
+            <div class="donasi-card">
+                <div class="card-image-wrapper">
+                    <img src="https://assets.bmm.or.id/uploads/campaigns/sedekah-harian-untuk-pangan-lansia-sebatangkara-1728898599.jpg" alt="Gambar Lansia">
+                    <span class="kategori-badge">Sosial</span>
+                </div>
+                <div class="card-content">
+                    <h3>Bantuan Pangan untuk Lansia Terlantar</h3>
+                    <p class="penyelenggara">Penyelenggara: <strong>Aksi Sosial Nusantara</strong></p>
+                    
+                    <div class="dana-info">
+                        <div class="dana-item">
+                            <span class="label">Terkumpul</span>
+                            <span class="nominal">Rp 12.000.000</span>
+                        </div>
+                        <div class="dana-item target">
+                            <span class="label">Target</span>
+                            <span class="nominal">Rp 30.000.000</span>
+                        </div>
+                    </div>
+                    
+                    <p class="deadline"> Batas Waktu: 25 Mei 2026</p>
+ 
+                    <a href="detail.html#lansia" class="btn-detail">Lihat Lebih Lengkap</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Aksi Nurani | Crowdfunding Donation Website</p>
+    </footer>
+</body>
+</html>

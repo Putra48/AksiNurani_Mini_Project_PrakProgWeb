@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" href="asset/logo aksi nurani.png">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="asset/logo aksi nurani.png" alt="Logo Aksi Nurani">
+            <h1>Aksi Nurani</h1>
+        </div>
+        
+        <div class="header-right">
+            <div class="navbar">
+                <a href="index.html">Home</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h3>Login</h3>
+        </div>
+
+        <form>
+            <div class="input-container">
+                
+                <label for="role">Login Sebagai</label>
+                <select id="role" name="role" required>
+                    <option value="">Pilih Pengguna</option>
+                    <option>Donatur</option>
+                    <option>Pengelola Kampanye</option>
+                </select>
+
+                <label for="email">Username / Email</label>
+                <input type="text" id="email" name="email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+            </div>
+
+            <button class="submit" type="submit">Login</button>
+        </form>
+    </div>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Aksi Nurani | Crowdfunding Donation Website</p>
+    </footer>
+
+</body>
+</html>
