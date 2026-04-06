@@ -1,7 +1,11 @@
- .donasi-container {
+.donasi-container {
     max-width: 650px;
     margin: 40px auto;
     padding: 0 20px;
+}
+
+.donasi-container img {
+    max-width: 100%;
 }
 
 .campaign-summary {
