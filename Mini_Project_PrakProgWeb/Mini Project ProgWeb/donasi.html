@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulir Donasi — Aksi Nurani</title>
+  <link rel="icon" href="asset/logo aksi nurani.png">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/donasi.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo">
+    <img src="asset/logo aksi nurani.png" alt="Logo">
+    <div class="logo-text">
+      <span class="logo-name">Aksi Nurani</span>
+      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
+    </div>
+  </a>
+  <nav class="header-nav">
+    <a href="index.html" class="nav-link">Beranda</a>
+    <div id="nav-auth"></div>
+  </nav>
+</header>
+
+<div class="donasi-wrapper" id="donasi-wrapper">
+  <!-- Rendered by JS -->
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="success-modal" id="success-modal">
+  <div class="success-box">
+    <div class="success-icon-wrap">✅</div>
+    <h2>Terima Kasih!</h2>
+    <p>Donasi Anda untuk</p>
+    <p id="modal-campaign-title" style="font-weight:700;color:var(--primary)"></p>
+    <div class="success-amount" id="modal-amount"></div>
+    <p>telah berhasil dikirim 🎉</p>
+    <div class="success-progress">
+      <div class="sp-label">Progress kampanye sekarang</div>
+      <div class="sp-pct" id="modal-pct"></div>
+      <div class="progress-bar"><div class="progress-fill" id="modal-progress-fill" style="width:0%"></div></div>
+    </div>
+    <a href="index.html" class="btn-modal-back">Kembali ke Beranda</a>
+    <a href="#" id="modal-detail-link" class="btn-modal-detail">Lihat Detail Kampanye</a>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="js/data.js"></script>
+<script>
+  updateNavAuth();
+
+  const session = Auth.getSession();
+  const hash = window.location.hash.replace('#', '') || 'cianjur';
+  const campaign = getCampaignById(hash);
+
+  // Guard: harus login
+  if (!session) {
+    window.location.href = `login.html?redirect=donasi.html%23${hash}`;
+  }
+
+  if (!campaign) {
+    document.getElementById('donasi-wrapper').innerHTML = `<p style="text-align:center;padding:80px;color:var(--text-muted)">Kampanye tidak ditemukan. <a href="index.html">Kembali</a></p>`;
+  } else {
+    renderForm(campaign);
+  }
+
+  function getCurrentCollected(c) {
+    const extra = DonationDB.getTotalForCampaign(c.id);
+    return c.collected + extra;
+  }
+
+  function renderForm(c) {
+    const totalCollected = getCurrentCollected(c);
+    const pct = getProgress(totalCollected, c.target);
+
+    document.getElementById('donasi-wrapper').innerHTML = `
+      <div class="breadcrumb">
+        <a href="index.html">🏠 Beranda</a>
+        <span>›</span>
+        <a href="detail.html#${c.id}">Detail Kampanye</a>
+        <span>›</span>
+        <span>Formulir Donasi</span>
+      </div>
+
+      <!-- Campaign Summary -->
+      <div class="campaign-summary">
+        <img src="${c.image}" alt="${c.title}" class="summary-img">
+        <div class="summary-body">
+          <div style="margin-bottom:8px;"><span class="badge badge-${c.categoryClass}">${c.category}</span></div>
+          <div class="summary-title">${c.title}</div>
+          <div class="summary-meta">
+            <span>🏛 ${c.organizer}</span>
+            <span>📍 ${c.location}</span>
+            <span>⏰ Deadline: ${c.deadlineText}</span>
+          </div>
+          <div class="summary-funds">
+            <div>
+              <div class="summary-collected" id="form-collected">${formatRupiah(totalCollected)}</div>
+              <div class="summary-target">dari ${formatRupiah(c.target)}</div>
+            </div>
+            <div class="summary-pct" id="form-pct">${pct}%</div>
+          </div>
+          <div class="progress-bar" style="margin-bottom:0">
+            <div class="progress-fill" id="form-progress-fill" style="width: ${pct}%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="form-card">
+        <!-- Section 1: Data Donatur -->
+        <div class="form-section-header">
+          <div class="section-num">1</div>
+          <h3>Data Donatur</h3>
+        </div>
+        <div class="form-section-body">
+          <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="f-nama" class="form-control" value="${session ? session.name : ''}" placeholder="Nama Anda">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="f-email" class="form-control" value="${session ? session.email : ''}" placeholder="email@contoh.com">
+          </div>
+          <label class="checkbox-group" style="margin-top:4px;">
+            <input type="checkbox" id="f-anon" onchange="toggleAnon(this)">
+            Tampilkan donasi sebagai <em>Anonim</em>
+          </label>
+        </div>
+
+        <hr class="form-divider">
+
+        <!-- Section 2: Detail Pembayaran -->
+        <div class="form-section-header">
+          <div class="section-num">2</div>
+          <h3>Detail Pembayaran</h3>
+        </div>
+        <div class="form-section-body">
+          <div class="form-group">
+            <label>Nominal Donasi Cepat</label>
+            <div class="quick-amounts">
+              ${[10000,25000,50000,100000,250000,500000].map(n => `<button class="quick-btn" onclick="setAmount(${n})">${formatRupiah(n)}</button>`).join('')}
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Atau masukkan nominal lain</label>
+            <div class="input-prefix-wrap">
+              <span class="prefix-label">Rp</span>
+              <input type="number" id="f-nominal" class="prefix-input" placeholder="50000" min="1000" oninput="clearQuickBtn()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Metode Pembayaran</label>
+            <select id="f-metode" class="form-control">
+              <option value="">-- Pilih Metode --</option>
+              <option>Transfer Bank BCA</option>
+              <option>Transfer Bank Mandiri</option>
+              <option>E-Wallet GoPay</option>
+              <option>E-Wallet DANA</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pesan Dukungan <span style="color:var(--text-muted);font-weight:400">(opsional)</span></label>
+            <textarea id="f-pesan" class="form-control" style="height:80px;resize:vertical" placeholder="Tulis doa atau semangat untuk mereka..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Upload Bukti Transfer <span style="color:var(--text-muted);font-weight:400">(PDF/JPG/PNG)</span></label>
+            <div class="file-upload-area" id="file-area" onclick="document.getElementById('f-bukti').click()">
+              <input type="file" id="f-bukti" accept=".pdf,.jpg,.jpeg,.png" onchange="onFileChange(this)">
+              <div class="upload-icon">📎</div>
+              <div class="upload-text" id="file-text">Klik untuk upload bukti transfer</div>
+              <div class="upload-hint">PDF, JPG, atau PNG • Maks. 5MB</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="submit-btn-wrap">
+          <button class="btn-submit-donasi" onclick="submitDonasi()">❤️ Kirim Donasi Sekarang</button>
+          <div class="security-note">🔒 Data Anda aman dan terenkripsi &nbsp;|&nbsp; Donasi disalurkan langsung ke penerima</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;">
+        <a href="detail.html#${c.id}" style="font-size:13px;color:var(--text-muted);text-decoration:none;">← Kembali ke Detail Kampanye</a>
+      </div>
+    `;
+  }
+
+  function setAmount(val) {
+    document.getElementById('f-nominal').value = val;
+    document.querySelectorAll('.quick-btn').forEach(b => {
+      const n = parseInt(b.getAttribute('onclick').replace('setAmount(','').replace(')',''));
+      b.classList.toggle('active', n === val);
+    });
+  }
+
+  function clearQuickBtn() {
+    document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  function toggleAnon(cb) {
+    const nameInput = document.getElementById('f-nama');
+    if (cb.checked) {
+      nameInput.value = 'Anonim';
+      nameInput.disabled = true;
+    } else {
+      nameInput.disabled = false;
+      nameInput.value = session ? session.name : '';
+    }
+  }
+
+  function onFileChange(input) {
+    const area = document.getElementById('file-area');
+    const txt = document.getElementById('file-text');
+    if (input.files.length > 0) {
+      area.classList.add('has-file');
+      txt.textContent = '✅ ' + input.files[0].name;
+    } else {
+      area.classList.remove('has-file');
+      txt.textContent = 'Klik untuk upload bukti transfer';
+    }
+  }
+
+  function showToast(msg, type='success') {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.innerHTML = (type==='success'?'✅':'⚠️') + ' ' + msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+
+  function submitDonasi() {
+    const name = document.getElementById('f-nama').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const nominal = parseInt(document.getElementById('f-nominal').value);
+    const metode = document.getElementById('f-metode').value;
+    const pesan = document.getElementById('f-pesan').value.trim();
+    const bukti = document.getElementById('f-bukti').files[0];
+
+    // Validation
+    if (!name) return showToast('Harap masukkan nama lengkap.', 'error');
+    if (!email || !email.includes('@')) return showToast('Harap masukkan email yang valid.', 'error');
+    if (!nominal || nominal < 1000) return showToast('Nominal donasi minimal Rp 1.000.', 'error');
+    if (!metode) return showToast('Harap pilih metode pembayaran.', 'error');
+    if (!bukti) return showToast('Harap upload bukti transfer.', 'error');
+
+    // Disable button
+    const btn = document.querySelector('.btn-submit-donasi');
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+
+    setTimeout(() => {
+      // Save to DB
+      DonationDB.add({
+        campaignId: campaign.id,
+        name,
+        email,
+        nominal,
+        metode,
+        message: pesan
+      });
+
+      // Show success modal
+      const newTotal = getCurrentCollected(campaign);
+      const newPct = getProgress(newTotal, campaign.target);
+
+      document.getElementById('modal-campaign-title').textContent = campaign.title;
+      document.getElementById('modal-amount').textContent = formatRupiah(nominal);
+      document.getElementById('modal-pct').textContent = newPct + '% tercapai';
+      document.getElementById('modal-detail-link').href = `detail.html#${campaign.id}`;
+
+      const modal = document.getElementById('success-modal');
+      modal.classList.add('show');
+
+      setTimeout(() => {
+        document.getElementById('modal-progress-fill').style.width = newPct + '%';
+      }, 300);
+
+      // Update summary card
+      const fc = document.getElementById('form-collected');
+      const fp = document.getElementById('form-pct');
+      const ff = document.getElementById('form-progress-fill');
+      if (fc) fc.textContent = formatRupiah(newTotal);
+      if (fp) fp.textContent = newPct + '%';
+      if (ff) ff.style.width = newPct + '%';
+
+    }, 1200);
+  }
+</script>
+</body>
+</html>
