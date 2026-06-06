@@ -1,0 +1,233 @@
+/* ============================================================
+   riwayat_donasi.css
+   Halaman Riwayat Donasi Donatur
+   ============================================================ */
+
+/* ---- LAYOUT ---- */
+.riwayat-wrap {
+  max-width: 900px;
+  margin: 36px auto;
+  padding: 0 5% 60px;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--primary);
+  margin-bottom: 24px;
+}
+
+/* ---- RINGKASAN 3 KARTU (BONUS FITUR) ---- */
+.ringkasan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.ringkasan-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.ringkasan-card .r-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.ringkasan-card .r-amount {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.ringkasan-card .r-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Warna border & teks per status */
+.r-verified {
+  border-top: 3px solid var(--success);
+}
+
+.r-verified .r-amount {
+  color: var(--success);
+}
+
+.r-pending {
+  border-top: 3px solid #f59e0b;
+}
+
+.r-pending .r-amount {
+  color: #d97706;
+}
+
+.r-ditolak {
+  border-top: 3px solid var(--danger);
+}
+
+.r-ditolak .r-amount {
+  color: var(--danger);
+}
+
+/* ---- RIWAYAT LIST ---- */
+.riwayat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.riwayat-item {
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.riwayat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  gap: 12px;
+}
+
+.riwayat-campaign-link {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 15px;
+  display: block;
+}
+
+.riwayat-campaign-link:hover {
+  text-decoration: underline;
+}
+
+.riwayat-organizer {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.riwayat-body {
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.riwayat-body-item label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.riwayat-body-item span {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.riwayat-body-full {
+  grid-column: 1 / -1;
+}
+
+/* ---- STATUS CHIP (indikator visual warna — BONUS) ---- */
+.status-chip {
+  padding: 5px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sc-verified {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* hijau */
+.sc-pending {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+/* kuning */
+.sc-ditolak {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* merah */
+
+/* ---- NOMINAL BESAR ---- */
+.nominal-big {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--success);
+}
+
+/* ---- VERIFIED AT ---- */
+.verified-at {
+  color: var(--success);
+}
+
+/* ---- PESAN ITALIC ---- */
+.pesan-italic {
+  font-style: italic;
+}
+
+/* ---- EMPTY STATE ---- */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.empty-state .empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  .ringkasan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .riwayat-body {
+    grid-template-columns: 1fr;
+  }
+
+  .riwayat-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
