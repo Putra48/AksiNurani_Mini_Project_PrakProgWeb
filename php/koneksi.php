@@ -147,3 +147,71 @@ function loginSession(array $user) {
     session_regenerate_id(true);
     $_SESSION['user'] = $user;
 }
+
+// ============================================================
+// RATE LIMITING: Mencegah brute-force login & spam registrasi
+// ============================================================
+// Cara kerja:
+//   1. checkRateLimit('login')     → cek apakah masih boleh mencoba
+//   2. recordFailedAttempt('login') → catat percobaan gagal
+//   3. resetRateLimit('login')     → reset setelah berhasil login
+//
+// Default: 5 percobaan gagal → dikunci 5 menit (300 detik)
+// ============================================================
+
+/**
+ * Cek apakah user masih diizinkan melakukan aksi.
+ *
+ * @param  string $key          Kunci unik ('login' atau 'register')
+ * @param  int    $maxAttempts   Batas percobaan sebelum dikunci
+ * @param  int    $lockSeconds   Lama penguncian dalam detik
+ * @return array  ['allowed' => bool, 'remaining' => int detik sisa]
+ */
+function checkRateLimit($key, $maxAttempts = 5, $lockSeconds = 300) {
+    $sessionKey = 'rate_limit_' . $key;
+    $now = time();
+
+    // Buat data awal jika belum ada
+    if (!isset($_SESSION[$sessionKey])) {
+        $_SESSION[$sessionKey] = [
+            'attempts'     => 0,
+            'locked_until' => 0,
+        ];
+    }
+
+    // Jika masih dalam masa kunci → tolak akses
+    if ($_SESSION[$sessionKey]['locked_until'] > $now) {
+        return [
+            'allowed'   => false,
+            'remaining' => $_SESSION[$sessionKey]['locked_until'] - $now,
+        ];
+    }
+
+    return ['allowed' => true, 'remaining' => 0];
+}
+
+/**
+ * Catat satu percobaan gagal. Kunci akses jika sudah melewati batas.
+ */
+function recordFailedAttempt($key, $maxAttempts = 5, $lockSeconds = 300) {
+    $sessionKey = 'rate_limit_' . $key;
+
+    if (!isset($_SESSION[$sessionKey])) {
+        $_SESSION[$sessionKey] = ['attempts' => 0, 'locked_until' => 0];
+    }
+
+    $_SESSION[$sessionKey]['attempts']++;
+
+    // Sudah melewati batas → kunci selama $lockSeconds
+    if ($_SESSION[$sessionKey]['attempts'] >= $maxAttempts) {
+        $_SESSION[$sessionKey]['locked_until'] = time() + $lockSeconds;
+        $_SESSION[$sessionKey]['attempts'] = 0; // Reset hitungan
+    }
+}
+
+/**
+ * Reset hitungan rate limit (panggil setelah login/register BERHASIL).
+ */
+function resetRateLimit($key) {
+    unset($_SESSION['rate_limit_' . $key]);
+}

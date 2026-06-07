@@ -41,29 +41,7 @@ $rekenings = !empty($c['rekening_info']) ? explode('|', $c['rekening_info']) : [
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">Beranda</a>
-    <?php if ($session): ?>
-      <span class="nav-username">👤 <?= htmlspecialchars($session['nama']) ?></span>
-      <?php if ($session['role'] === 'penyelenggara'): ?>
-        <a href="kelola_kampanye.php" class="nav-link nav-link-kelola">📋 Kelola</a>
-      <?php else: ?>
-        <a href="riwayat_donasi.php" class="nav-link nav-link-kelola">📜 Riwayat</a>
-      <?php endif; ?>
-      <a href="logout.php" class="nav-link btn-logout">Logout</a>
-    <?php else: ?>
-      <a href="login.php" class="nav-link btn-login">Login</a>
-    <?php endif; ?>
-  </nav>
-</header>
+<?php include 'php/header.php'; ?>
 
 <div class="container" id="main-container">
   <div class="campaign-content show">
@@ -76,7 +54,7 @@ $rekenings = !empty($c['rekening_info']) ? explode('|', $c['rekening_info']) : [
     </div>
 
     <div class="detail-grid">
-      <div class="detail-img-wrap">
+      <div class="detail-img-wrap fade-in">
         <img src="<?= htmlspecialchars($gambar) ?>" alt="<?= htmlspecialchars($c['judul']) ?>">
         <p class="img-caption">📍 <?= htmlspecialchars($c['lokasi']) ?></p>
 
@@ -102,7 +80,7 @@ $rekenings = !empty($c['rekening_info']) ? explode('|', $c['rekening_info']) : [
         </div>
       </div>
 
-      <div class="detail-right">
+      <div class="detail-right fade-in">
         <h2><?= htmlspecialchars($c['judul']) ?></h2>
 
         <div class="meta-chips">
@@ -120,7 +98,7 @@ $rekenings = !empty($c['rekening_info']) ? explode('|', $c['rekening_info']) : [
             <div class="progress-pct"><?= $pct ?>%</div>
           </div>
           <div class="progress-bar-lg">
-            <div class="progress-fill-lg" id="progress-fill"></div>
+            <div class="progress-fill-lg" id="progress-fill" data-width="<?= $pct ?>"></div>
           </div>
           <div class="progress-meta">
             <span class="donors">👥 <?= $totalDonors ?> donatur</span>
@@ -185,14 +163,6 @@ $rekenings = !empty($c['rekening_info']) ? explode('|', $c['rekening_info']) : [
   </div>
 </div>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
-
-<script>
-setTimeout(() => {
-  document.getElementById('progress-fill').style.width = '<?= $pct ?>%';
-}, 200);
-</script>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

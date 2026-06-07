@@ -17,62 +17,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'login') {
-        $email    = sanitize($conn, $_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $role     = $_POST['role'] ?? '';
-
-        if (!$email || !$password || !$role) {
-            $error = 'Harap isi semua kolom.';
+        // --- Rate Limiting: cegah brute-force login ---
+        $rateCheck = checkRateLimit('login');
+        if (!$rateCheck['allowed']) {
+            $menit = ceil($rateCheck['remaining'] / 60);
+            $error = "Terlalu banyak percobaan gagal. Coba lagi dalam {$menit} menit.";
         } else {
-            $table = $role === 'donatur' ? 'donatur' : 'penyelenggara';
-            $stmt  = $conn->prepare("SELECT * FROM {$table} WHERE email = ?");
-            $stmt->bind_param('s', $email);
-            $stmt->execute();
-            $user = $stmt->get_result()->fetch_assoc();
+            $email    = sanitize($conn, $_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $role     = $_POST['role'] ?? '';
 
-            if ($user && password_verify($password, $user['password'])) {
-                loginSession([
-                    'id'    => $user['id'],
-                    'nama'  => $user['nama'] ?? $user['nama_kantor'],
-                    'email' => $user['email'],
-                    'role'  => $role,
-                ]);
-                redirectTo($_GET['redirect'] ?? '');
+            if (!$email || !$password || !$role) {
+                $error = 'Harap isi semua kolom.';
             } else {
-                $error = 'Email, password, atau role tidak sesuai.';
+                $table = $role === 'donatur' ? 'donatur' : 'penyelenggara';
+                $stmt  = $conn->prepare("SELECT * FROM {$table} WHERE email = ?");
+                $stmt->bind_param('s', $email);
+                $stmt->execute();
+                $user = $stmt->get_result()->fetch_assoc();
+
+                if ($user && password_verify($password, $user['password'])) {
+                    resetRateLimit('login'); // Berhasil → reset hitungan
+                    loginSession([
+                        'id'    => $user['id'],
+                        'nama'  => $user['nama'] ?? $user['nama_kantor'],
+                        'email' => $user['email'],
+                        'role'  => $role,
+                    ]);
+                    redirectTo($_GET['redirect'] ?? '');
+                } else {
+                    recordFailedAttempt('login'); // Gagal → catat percobaan
+                    $error = 'Email, password, atau role tidak sesuai.';
+                }
             }
         }
     }
 
     if ($action === 'register') {
-        $role     = $_POST['reg_role'] ?? '';
-        $nama     = sanitize($conn, $_POST['reg_nama'] ?? '');
-        $email    = sanitize($conn, $_POST['reg_email'] ?? '');
-        $telp     = sanitize($conn, $_POST['reg_telp'] ?? '');
-        $alamat   = sanitize($conn, $_POST['reg_alamat'] ?? '');
-        $password = $_POST['reg_password'] ?? '';
-        $confirm  = $_POST['reg_confirm'] ?? '';
-
-        if (!$nama || !$email || !$password || !$role || !$telp) {
-            $error = 'Harap isi semua kolom wajib.';
-        } elseif (strlen($password) < 6) {
-            $error = 'Password minimal 6 karakter.';
-        } elseif ($password !== $confirm) {
-            $error = 'Konfirmasi password tidak sesuai.';
+        // --- Rate Limiting: cegah spam registrasi ---
+        $rateCheck = checkRateLimit('register');
+        if (!$rateCheck['allowed']) {
+            $menit = ceil($rateCheck['remaining'] / 60);
+            $error = "Terlalu banyak percobaan. Coba lagi dalam {$menit} menit.";
+            $activeTab = 'register';
         } else {
-            $hashed = password_hash($password, PASSWORD_DEFAULT);
-            if ($role === 'donatur') {
-                $stmt = $conn->prepare("INSERT INTO donatur (nama,email,password,no_telepon) VALUES (?,?,?,?)");
-                $stmt->bind_param('ssss', $nama, $email, $hashed, $telp);
+            $role     = $_POST['reg_role'] ?? '';
+            $nama     = sanitize($conn, $_POST['reg_nama'] ?? '');
+            $email    = sanitize($conn, $_POST['reg_email'] ?? '');
+            $telp     = sanitize($conn, $_POST['reg_telp'] ?? '');
+            $alamat   = sanitize($conn, $_POST['reg_alamat'] ?? '');
+            $password = $_POST['reg_password'] ?? '';
+            $confirm  = $_POST['reg_confirm'] ?? '';
+
+            if (!$nama || !$email || !$password || !$role || !$telp) {
+                $error = 'Harap isi semua kolom wajib.';
+            } elseif (strlen($password) < 6) {
+                $error = 'Password minimal 6 karakter.';
+            } elseif ($password !== $confirm) {
+                $error = 'Konfirmasi password tidak sesuai.';
             } else {
-                $stmt = $conn->prepare("INSERT INTO penyelenggara (nama_kantor,email,password,no_telepon,alamat) VALUES (?,?,?,?,?)");
-                $stmt->bind_param('sssss', $nama, $email, $hashed, $telp, $alamat);
-            }
-            if ($stmt->execute()) {
-                loginSession(['id'=>$conn->insert_id,'nama'=>$nama,'email'=>$email,'role'=>$role]);
-                redirectTo($_GET['redirect'] ?? '');
-            } else {
-                $error = 'Email sudah terdaftar atau terjadi kesalahan.';
+                $hashed = password_hash($password, PASSWORD_DEFAULT);
+                if ($role === 'donatur') {
+                    $stmt = $conn->prepare("INSERT INTO donatur (nama,email,password,no_telepon) VALUES (?,?,?,?)");
+                    $stmt->bind_param('ssss', $nama, $email, $hashed, $telp);
+                } else {
+                    $stmt = $conn->prepare("INSERT INTO penyelenggara (nama_kantor,email,password,no_telepon,alamat) VALUES (?,?,?,?,?)");
+                    $stmt->bind_param('sssss', $nama, $email, $hashed, $telp, $alamat);
+                }
+                if ($stmt->execute()) {
+                    resetRateLimit('register'); // Berhasil → reset hitungan
+                    loginSession(['id'=>$conn->insert_id,'nama'=>$nama,'email'=>$email,'role'=>$role]);
+                    redirectTo($_GET['redirect'] ?? '');
+                } else {
+                    recordFailedAttempt('register'); // Gagal → catat percobaan
+                    $error = 'Email sudah terdaftar atau terjadi kesalahan.';
+                }
             }
         }
     }
@@ -90,21 +109,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">← Kembali ke Beranda</a>
-  </nav>
-</header>
+<?php $pageId = 'login'; include 'php/header.php'; ?>
 
 <div class="auth-wrapper">
-  <div class="auth-card">
+  <div class="auth-card fade-in">
     <div class="auth-brand">
       <img src="asset/logo aksi nurani.png" alt="Logo">
       <h1>Aksi Nurani</h1>
@@ -232,9 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
+<?php include 'php/footer.php'; ?>
 
 <script>
 function switchTab(tab) {

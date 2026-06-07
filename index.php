@@ -71,31 +71,9 @@ $session    = getSession();
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo Aksi Nurani">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">Beranda</a>
-    <?php if ($session): ?>
-      <span class="nav-username">👤 <?= htmlspecialchars($session['nama']) ?></span>
-      <?php if ($session['role'] === 'penyelenggara'): ?>
-        <a href="kelola_kampanye.php" class="nav-link nav-link-kelola">📋 Kelola</a>
-      <?php else: ?>
-        <a href="riwayat_donasi.php" class="nav-link nav-link-kelola">📜 Riwayat</a>
-      <?php endif; ?>
-      <a href="logout.php" class="nav-link btn-logout">Logout</a>
-    <?php else: ?>
-      <a href="login.php" class="nav-link btn-login">Login</a>
-    <?php endif; ?>
-  </nav>
-</header>
+<?php include 'php/header.php'; ?>
 
-<section class="hero">
+<section class="hero fade-in">
   <div class="hero-content">
     <h1>Bersama Kita Bisa<br>Membuat <span>Perubahan</span></h1>
     <p>Platform donasi terpercaya untuk membantu sesama. Setiap rupiah yang Anda berikan adalah harapan nyata bagi mereka yang membutuhkan.</p>
@@ -163,7 +141,7 @@ $session    = getSession();
         $catClass = getCategoryClass($c['kategori']);
         $gambar   = campaignImageSrc($c['gambar']);
       ?>
-      <div class="campaign-card" onclick="location.href='detail.php?id=<?= $c['id'] ?>'">
+      <div class="campaign-card fade-in" onclick="location.href='detail.php?id=<?= $c['id'] ?>'">
         <div class="card-img-wrap">
           <img src="<?= htmlspecialchars($gambar) ?>" alt="<?= htmlspecialchars($c['judul']) ?>" loading="lazy">
           <span class="card-badge badge badge-<?= $catClass ?>"><?= $c['kategori'] ?></span>
@@ -212,25 +190,13 @@ $session    = getSession();
 </main>
 
 <?php if (!$session || $session['role'] !== 'penyelenggara'): ?>
-<section class="cta-section">
+<section class="cta-section fade-in">
   <h2>Punya Kampanye yang Ingin Digalang?</h2>
   <p>Login sebagai Pengelola Kampanye dan mulai galang dana untuk cause yang Anda percaya.</p>
   <a href="login.php" class="btn-cta-white">Daftar Sekarang</a>
 </section>
 <?php endif; ?>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
-
-<script>
-window.addEventListener('load', () => {
-  document.querySelectorAll('.progress-fill').forEach(el => {
-    const w = el.dataset.width;
-    el.style.width = '0';
-    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.width = w + '%'; }));
-  });
-});
-</script>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

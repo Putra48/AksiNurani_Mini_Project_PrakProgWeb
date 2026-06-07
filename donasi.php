@@ -106,21 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">Beranda</a>
-    <span class="nav-username">👤 <?= htmlspecialchars($session['nama']) ?></span>
-    <a href="riwayat_donasi.php" class="nav-link nav-link-kelola">📜 Riwayat</a>
-    <a href="logout.php" class="nav-link btn-logout">Logout</a>
-  </nav>
-</header>
+<?php include 'php/header.php'; ?>
 
 <?php if ($success): ?>
 <div class="success-modal show">
@@ -151,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <span>Formulir Donasi</span>
   </div>
 
-  <div class="campaign-summary">
+  <div class="campaign-summary fade-in">
     <img src="<?= htmlspecialchars($gambar) ?>" alt="<?= htmlspecialchars($c['judul']) ?>" class="summary-img">
     <div class="summary-body">
       <div class="summary-badge-wrap">
@@ -180,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="donasi-error">⚠️ <?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
 
-  <form method="POST" enctype="multipart/form-data" class="form-card">
+  <form method="POST" enctype="multipart/form-data" class="form-card fade-in">
     <?= csrfField() ?>
     <div class="form-section-header">
       <div class="section-num">1</div>
@@ -266,9 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
+<?php include 'php/footer.php'; ?>
 
 <script>
 function setAmount(val) {
@@ -296,13 +280,6 @@ function onFileChange(input) {
     txt.textContent = 'Klik untuk upload bukti transfer';
   }
 }
-window.addEventListener('load', () => {
-  document.querySelectorAll('.progress-fill').forEach(el => {
-    const w = el.dataset.width;
-    el.style.width = '0';
-    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.width = w + '%'; }));
-  });
-});
 </script>
 </body>
 </html>

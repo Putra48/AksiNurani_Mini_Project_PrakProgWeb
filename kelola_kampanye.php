@@ -171,20 +171,7 @@ if (isset($_GET['donasi'])) {
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">Beranda</a>
-    <span class="nav-username">👤 <?= htmlspecialchars($session['nama']) ?></span>
-    <a href="logout.php" class="nav-link btn-logout">logout</a>
-  </nav>
-</header>
+<?php include 'php/header.php'; ?>
 
 <div class="kelola-wrap">
   <div class="page-header">
@@ -363,7 +350,7 @@ if (isset($_GET['donasi'])) {
   <?php endif; ?>
 
   <!-- TABEL DAFTAR KAMPANYE -->
-  <div class="table-wrap">
+  <div class="table-wrap fade-in">
     <table>
       <thead>
         <tr>
@@ -429,8 +416,6 @@ if (isset($_GET['donasi'])) {
   </div>
 </div>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>
