@@ -126,6 +126,22 @@ function verifyCsrf($token) {
         && hash_equals($_SESSION['csrf_token'], $token);
 }
 
+// ============================================================
+// FLASH MESSAGE (untuk PRG pattern - Post/Redirect/Get)
+// ============================================================
+
+// Simpan pesan ke session (akan tampil 1x setelah redirect)
+function setFlash($type, $msg) {
+    $_SESSION['flash'] = ['type' => $type, 'msg' => $msg];
+}
+
+// Ambil pesan flash lalu hapus dari session (hanya muncul sekali)
+function getFlash() {
+    $flash = $_SESSION['flash'] ?? null;
+    unset($_SESSION['flash']);
+    return $flash;
+}
+
 // Placeholder gambar lokal (via.placeholder.com sudah tidak aktif sejak 2024).
 function placeholderImg($label = 'Tidak ada gambar') {
     $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">'

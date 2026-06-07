@@ -106,21 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">Beranda</a>
-    <span class="nav-username">👤 <?= htmlspecialchars($session['nama']) ?></span>
-    <a href="riwayat_donasi.php" class="nav-link nav-link-kelola">📜 Riwayat</a>
-    <a href="logout.php" class="nav-link btn-logout">Logout</a>
-  </nav>
-</header>
+<?php include 'php/header.php'; ?>
 
 <?php if ($success): ?>
 <div class="success-modal show">
@@ -266,9 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
+<?php include 'php/footer.php'; ?>
 
 <script>
 function setAmount(val) {
@@ -302,6 +286,19 @@ window.addEventListener('load', () => {
     el.style.width = '0';
     requestAnimationFrame(() => requestAnimationFrame(() => { el.style.width = w + '%'; }));
   });
+});
+// --- Konfirmasi jika user meninggalkan form yang sudah diisi ---
+let formDirty = false;
+document.querySelector('.form-card').addEventListener('input', () => formDirty = true);
+window.addEventListener('beforeunload', (e) => {
+  if (formDirty) { e.preventDefault(); e.returnValue = ''; }
+});
+// --- Loading state saat submit (mencegah double-click) ---
+document.querySelector('.form-card').addEventListener('submit', function() {
+  formDirty = false; // jangan trigger beforeunload
+  const btn = this.querySelector('.btn-submit-donasi');
+  btn.disabled = true;
+  btn.textContent = '⏳ Mengirim donasi...';
 });
 </script>
 </body>

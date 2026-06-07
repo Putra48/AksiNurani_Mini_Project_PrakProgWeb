@@ -71,29 +71,7 @@ $session    = getSession();
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo Aksi Nurani">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">Beranda</a>
-    <?php if ($session): ?>
-      <span class="nav-username">👤 <?= htmlspecialchars($session['nama']) ?></span>
-      <?php if ($session['role'] === 'penyelenggara'): ?>
-        <a href="kelola_kampanye.php" class="nav-link nav-link-kelola">📋 Kelola</a>
-      <?php else: ?>
-        <a href="riwayat_donasi.php" class="nav-link nav-link-kelola">📜 Riwayat</a>
-      <?php endif; ?>
-      <a href="logout.php" class="nav-link btn-logout">Logout</a>
-    <?php else: ?>
-      <a href="login.php" class="nav-link btn-login">Login</a>
-    <?php endif; ?>
-  </nav>
-</header>
+<?php include 'php/header.php'; ?>
 
 <section class="hero">
   <div class="hero-content">
@@ -219,9 +197,7 @@ $session    = getSession();
 </section>
 <?php endif; ?>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
+<?php include 'php/footer.php'; ?>
 
 <script>
 window.addEventListener('load', () => {

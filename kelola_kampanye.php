@@ -7,10 +7,10 @@ $pid     = $session['id'];
 $msg     = '';
 $msgType = 'success';
 
-// ---- HAPUS KAMPANYE ----
+// ---- HAPUS KAMPANYE (PRG: redirect setelah aksi) ----
 if (isset($_GET['hapus'])) {
     if (!verifyCsrf($_GET['csrf'] ?? '')) {
-        $msg = 'Sesi tidak valid. Coba lagi.'; $msgType = 'error';
+        setFlash('error', 'Sesi tidak valid. Coba lagi.');
     } else {
         $kid = intval($_GET['hapus']);
         $cek = $conn->prepare("SELECT dana_terkumpul FROM kampanye WHERE id=? AND penyelenggara_id=?");
@@ -18,16 +18,19 @@ if (isset($_GET['hapus'])) {
         $cek->execute();
         $row = $cek->get_result()->fetch_assoc();
         if (!$row) {
-            $msg = 'Kampanye tidak ditemukan.'; $msgType = 'error';
+            setFlash('error', 'Kampanye tidak ditemukan.');
         } elseif ($row['dana_terkumpul'] >= 10000) {
-            $msg = 'Kampanye tidak dapat dihapus karena dana terkumpul ≥ Rp 10.000.'; $msgType = 'error';
+            setFlash('error', 'Kampanye tidak dapat dihapus karena dana terkumpul ≥ Rp 10.000.');
         } else {
             $del = $conn->prepare("DELETE FROM kampanye WHERE id=? AND penyelenggara_id=?");
             $del->bind_param('ii', $kid, $pid);
             $del->execute();
-            $msg = 'Kampanye berhasil dihapus.';
+            setFlash('success', 'Kampanye berhasil dihapus.');
         }
     }
+    // PRG: redirect agar refresh tidak mengulang hapus
+    header("Location: kelola_kampanye.php");
+    exit;
 }
 
 // ---- TAMBAH / EDIT KAMPANYE ----
@@ -72,7 +75,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])) {
                 $stmt = $conn->prepare("INSERT INTO kampanye (penyelenggara_id,judul,kategori,lokasi,deskripsi,deskripsi2,target_dana,gambar,rekening_info,deadline) VALUES (?,?,?,?,?,?,?,?,?,?)");
                 $stmt->bind_param('isssssdsss', $pid,$judul,$kat,$lokasi,$desk,$desk2,$target,$gambarFinal,$rek,$deadline);
                 if ($stmt->execute()) {
-                    $msg = 'Kampanye berhasil ditambahkan!';
+                    setFlash('success', 'Kampanye berhasil ditambahkan!');
+                    header("Location: kelola_kampanye.php");
+                    exit;
                 } else {
                     $msg = 'Gagal menambah kampanye.'; $msgType = 'error';
                 }
@@ -85,7 +90,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])) {
                     $stmt->bind_param('sssssdssii',$judul,$kat,$lokasi,$desk,$desk2,$target,$rek,$deadline,$kid,$pid);
                 }
                 if ($stmt->execute()) {
-                    $msg = 'Kampanye berhasil diperbarui!';
+                    setFlash('success', 'Kampanye berhasil diperbarui!');
+                    header("Location: kelola_kampanye.php");
+                    exit;
                 } else {
                     $msg = 'Gagal memperbarui.'; $msgType = 'error';
                 }
@@ -94,10 +101,11 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['action'])) {
     }
 }
 
-// ---- VERIFIKASI / TOLAK DONASI ----
+// ---- VERIFIKASI / TOLAK DONASI (PRG: redirect setelah aksi) ----
 if (isset($_GET['verify'])) {
+    $donasiPageId = intval($_GET['donasi'] ?? 0);
     if (!verifyCsrf($_GET['csrf'] ?? '')) {
-        $msg = 'Sesi tidak valid. Coba lagi.'; $msgType = 'error';
+        setFlash('error', 'Sesi tidak valid. Coba lagi.');
     } else {
         $did    = intval($_GET['verify']);
         $status = $_GET['status'] ?? '';
@@ -114,19 +122,27 @@ if (isset($_GET['verify'])) {
                     if ($upd->affected_rows === 1) {
                         $add = $conn->prepare("UPDATE kampanye SET dana_terkumpul=dana_terkumpul+? WHERE id=?");
                         $add->bind_param('di', $don['nominal'], $don['kampanye_id']); $add->execute();
-                        $msg = 'Donasi diterima! Dana terkumpul bertambah.';
+                        setFlash('success', 'Donasi diterima! Dana terkumpul bertambah.');
                     }
                 } else {
                     $upd = $conn->prepare("UPDATE donasi SET status='ditolak' WHERE id=? AND status='pending'");
                     $upd->bind_param('i', $did); $upd->execute();
-                    $msg = 'Donasi telah ditolak.'; $msgType = 'error';
+                    setFlash('error', 'Donasi telah ditolak.');
                 }
             } else {
-                $msg = 'Donasi tidak ditemukan atau sudah diproses.'; $msgType = 'error';
+                setFlash('error', 'Donasi tidak ditemukan atau sudah diproses.');
             }
         }
     }
+    // PRG: redirect kembali ke halaman donasi kampanye
+    $redirect = $donasiPageId ? "kelola_kampanye.php?donasi={$donasiPageId}" : "kelola_kampanye.php";
+    header("Location: $redirect");
+    exit;
 }
+
+// ---- AMBIL FLASH MESSAGE (dari redirect sebelumnya, jika ada) ----
+$flash = getFlash();
+if ($flash) { $msg = $flash['msg']; $msgType = $flash['type']; }
 
 // ---- FETCH DATA ----
 $kampanyeStmt = $conn->prepare("SELECT k.*,
@@ -171,20 +187,7 @@ if (isset($_GET['donasi'])) {
 </head>
 <body>
 
-<header>
-  <a href="index.php" class="logo">
-    <img src="asset/logo aksi nurani.png" alt="Logo">
-    <div class="logo-text">
-      <span class="logo-name">Aksi Nurani</span>
-      <span class="logo-tagline">Bergerak, Berbagi, Berdampak</span>
-    </div>
-  </a>
-  <nav class="header-nav">
-    <a href="index.php" class="nav-link">Beranda</a>
-    <span class="nav-username">👤 <?= htmlspecialchars($session['nama']) ?></span>
-    <a href="logout.php" class="nav-link btn-logout">logout</a>
-  </nav>
-</header>
+<?php include 'php/header.php'; ?>
 
 <div class="kelola-wrap">
   <div class="page-header">
@@ -429,8 +432,25 @@ if (isset($_GET['donasi'])) {
   </div>
 </div>
 
-<footer class="main-footer">
-  <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
-</footer>
+<?php include 'php/footer.php'; ?>
+
+<script>
+// --- Konfirmasi jika user meninggalkan form yang sudah diisi ---
+const formKelola = document.querySelector('.form-card-kelola form');
+if (formKelola) {
+  let formDirty = false;
+  formKelola.addEventListener('input', () => formDirty = true);
+  window.addEventListener('beforeunload', (e) => {
+    if (formDirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+  // --- Loading state saat submit (mencegah double-click) ---
+  formKelola.addEventListener('submit', function() {
+    formDirty = false;
+    const btn = this.querySelector('.btn-tambah');
+    btn.disabled = true;
+    btn.textContent = '⏳ Menyimpan...';
+  });
+}
+</script>
 </body>
 </html>

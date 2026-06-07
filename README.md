@@ -1,3 +1,8 @@
+# 🌟 Aksi Nurani — Platform Donasi (Mini Project #2)
+**Pemrograman Web 2023/2024 Genap**
+
+---
+
 ## 🗂️ Struktur Project
 
 ```
