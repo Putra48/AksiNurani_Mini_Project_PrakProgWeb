@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="asset/logo aksi nurani.png">
+    <title>Aksi Nurani</title>
+    <link rel="stylesheet" href="css/logout.css">
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="asset/logo aksi nurani.png" alt="Logo Aksi Nurani">
+            <h1>Aksi Nurani</h1>
+        </div>
+        <nav>
+            <a href="index.php" class="nav-link">Beranda</a>
+        </nav>     
+    </header>
+
+    <div class="logout-wrapper">
+        <div class="logout-card">
+            <div class="logout-icon">👋</div>
+            <h1>Anda telah berhasil logout!</h1>
+            <p>Terima kasih telah menggunakan Aksi Nurani.<br>Sampai jumpa lagi!</p>
+            <a href="index.php">Kembali ke halaman utama</a>
+        </div>
+    </div>
+           
+    <footer class="main-footer">
+        <p>&copy; 2026 <strong>Aksi Nurani</strong> — Platform Donasi Terpercaya &nbsp;|&nbsp; Dibuat dengan ❤️ untuk Indonesia</p>
+    </footer>
+</body>
+</html>
