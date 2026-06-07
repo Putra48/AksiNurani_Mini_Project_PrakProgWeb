@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           <button type="submit" class="btn-submit">Masuk Sekarang</button>
           <div class="demo-hint">
-            💡 <strong>Demo Donatur:</strong> lanang@gmail.com / donatur123<br>
+            💡 <strong>Demo Donatur:</strong> budi@gmail.com / donatur123<br>
             💡 <strong>Demo Pengelola:</strong> relawan@aksinurani.id / admin123
           </div>
           <a href="index.php" class="back-home">← Kembali ke Beranda</a>
